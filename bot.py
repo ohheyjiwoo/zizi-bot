@@ -83,7 +83,9 @@ def build_briefing(brand: str = None):
 
 
 async def start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.id != ALLOWED_CHAT_ID:
+    chat_id = update.effective_chat.id
+    if ALLOWED_CHAT_ID != 0 and chat_id != ALLOWED_CHAT_ID:
+        await update.message.reply_text(f"인증 실패. 당신의 chat_id: {chat_id}")
         return
     await update.message.reply_text(
         "안녕하세요! 저는 Zizi예요 👋\n\n"
