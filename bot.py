@@ -1,7 +1,5 @@
 import os
 import logging
-import threading
-from http.server import HTTPServer, BaseHTTPRequestHandler
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
@@ -9,20 +7,7 @@ logging.basicConfig(level=logging.INFO)
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 PORT = int(os.environ.get("PORT", 8080))
-
-
-class HealthHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Zizi bot running")
-    def log_message(self, *args):
-        pass
-
-
-def run_health_server():
-    server = HTTPServer(("0.0.0.0", PORT), HealthHandler)
-    server.serve_forever()
+WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "")
 
 
 async def start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
@@ -35,14 +20,20 @@ async def echo(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
 
 def main():
-    threading.Thread(target=run_health_server, daemon=True).start()
-    print(f"헬스체크 서버 시작 (포트 {PORT})")
-
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
-    print("Zizi 봇 폴링 시작!")
-    app.run_polling()
+
+    if WEBHOOK_URL:
+        print(f"웹훅 모드: {WEBHOOK_URL}")
+        app.run_webhook(
+            listen="0.0.0.0",
+            port=PORT,
+            webhook_url=WEBHOOK_URL,
+        )
+    else:
+        print("폴링 모드")
+        app.run_polling()
 
 
 if __name__ == "__main__":
