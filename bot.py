@@ -89,9 +89,9 @@ async def start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         "안녕하세요! 저는 Zizi예요 👋\n\n"
         "명령어:\n"
         "/briefing - 전체 할일 브리핑\n"
-        "/보타이 - 보타이 할일\n"
-        "/엔비유 - 엔비유 할일\n"
-        "/미친포차 - 미친포차 할일\n"
+        "/bowtie - 보타이 할일\n"
+        "/envyu - 엔비유 할일\n"
+        "/crazypocah - 미친포차 할일\n"
         "/완료 [할일명] - 완료 처리\n"
         "또는 그냥 말 걸어도 돼요!"
     )
@@ -107,7 +107,7 @@ async def briefing(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 async def brand_briefing(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat.id != ALLOWED_CHAT_ID:
         return
-    brand_map = {"/보타이": "보타이", "/엔비유": "엔비유", "/미친포차": "미친포차"}
+    brand_map = {"/bowtie": "보타이", "/envyu": "엔비유", "/crazypocah": "미친포차"}
     brand = brand_map.get(update.message.text.split()[0], "보타이")
     msg = build_briefing(brand)
     await update.message.reply_text(msg, parse_mode="Markdown")
@@ -141,9 +141,9 @@ def main():
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("briefing", briefing))
-    app.add_handler(CommandHandler("보타이", brand_briefing))
-    app.add_handler(CommandHandler("엔비유", brand_briefing))
-    app.add_handler(CommandHandler("미친포차", brand_briefing))
+    app.add_handler(CommandHandler("bowtie", brand_briefing))
+    app.add_handler(CommandHandler("envyu", brand_briefing))
+    app.add_handler(CommandHandler("crazypocah", brand_briefing))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, chat))
     print("Zizi 봇 시작!")
     app.run_polling()
