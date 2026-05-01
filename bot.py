@@ -12,7 +12,7 @@ WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "")
 
 async def start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
-    await update.message.reply_text(f"Zizi 작동 중! 당신의 chat_id: {chat_id}")
+    await update.message.reply_text(f"Zizi 작동 중! chat_id: {chat_id}")
 
 
 async def echo(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
@@ -25,11 +25,14 @@ def main():
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
     if WEBHOOK_URL:
-        print(f"웹훅 모드: {WEBHOOK_URL}")
+        webhook_path = "/webhook"
+        full_url = f"{WEBHOOK_URL}{webhook_path}"
+        print(f"웹훅 모드: {full_url} / 포트: {PORT}")
         app.run_webhook(
             listen="0.0.0.0",
             port=PORT,
-            webhook_url=WEBHOOK_URL,
+            url_path=webhook_path,
+            webhook_url=full_url,
         )
     else:
         print("폴링 모드")
